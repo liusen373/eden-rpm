@@ -67,6 +67,9 @@ jobs:
         cd ~/rpmbuild/SPECS/
         # 下载源码（如果spec中有Source URL）
         spectool -g -R *.spec
+
+        # 启用ccache
+        export PATH="/usr/lib64/ccache:$PATH"
         
         # 构建RPM
         rpmbuild -ba *.spec
