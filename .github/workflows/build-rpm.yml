@@ -8,10 +8,58 @@ permissions:
   contents: write
 
 jobs:
+  determine-image:
+    runs-on: ubuntu-latest
+    outputs:
+      branch_name: ${{ steps.detect.outputs.branch_name }}
+      container_image: ${{ steps.detect.outputs.container_image }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Detect branch and choose container image
+        id: detect
+        run: |
+          REF_NAME="${{ github.ref_name }}"
+          REF_TYPE="${{ github.ref_type }}"
+          
+          # 提取分支名
+          if [ "$REF_TYPE" = "branch" ]; then
+            branch_name="$REF_NAME"
+          elif [ "$REF_TYPE" = "tag" ]; then
+          # 从标签中提取分支名（最后一个-后的部分）
+            branch_name="${REF_NAME##*-}"
+          else
+            echo "Error: Unknown ref_type: $REF_TYPE"
+            exit 1
+          fi
+
+          # 根据分支名确定容器镜像
+          if [ "$branch_name" = "rawhide" ]; then
+            container_image="fedora:rawhide"
+          elif [[ "$branch_name" =~ ^f[0-9]+$ ]]; then
+            # 提取数字部分
+            version="${branch_name#f}"
+            container_image="fedora:$version"
+          else
+            echo "Error: Unrecognized branch name format: $branch_name"
+            exit 1
+          fi
+
+          # 输出结果（可以在后续步骤中使用）
+          echo "branch_name=$branch_name" >> $GITHUB_OUTPUT
+          echo "container_image=$container_image" >> $GITHUB_OUTPUT
+          echo "container_image=$container_image" >> $GITHUB_ENV
+          
+          echo "Branch name: $branch_name"
+          echo "Container image: $container_image"
+
   build-rpm:
+    needs: determine-image
     runs-on: ubuntu-latest
     container:
-      image: fedora:rawhide
+      image: ${{ needs.determine-image.outputs.container_image }}
     
     steps:
     - name: Checkout repository
@@ -70,7 +118,7 @@ jobs:
 
         # 启用ccache
         export PATH="/usr/lib64/ccache:$PATH"
-        
+
         # 构建RPM
         rpmbuild -ba *.spec
         
