@@ -19,7 +19,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        dnf install -y rpm-build rpmdevtools make gcc git ccache
+        dnf group install -y rpm-development-tools c-development development-tools
         dnf builddep -y *.spec
 
     - name: Setup rpmbuild
