@@ -18,7 +18,7 @@ BuildRequires:  clang lld llvm-devel
 BuildRequires:  gcc gcc-c++ mold libusb1-devel
 BuildRequires:  cmake ninja-build glslang ffmpeg-free-devel spirv-tools-devel
 BuildRequires:  openssl-devel fmt-devel json-devel lz4-devel opus-devel boost-devel sdl2-compat-devel systemd-devel
-BuildRequires:  qt6-qtbase-devel qt6-qtmultimedia-devel qt6-qttools-devel qt6-linguist qt6-qtwebengine-devel
+BuildRequires:  qt6-qtbase-devel qt6-qtbase-private-devel qt6-qtmultimedia-devel qt6-qttools-devel qt6-linguist qt6-qtwebengine-devel
 BuildRequires:  libtool stb_image-devel stb_image_write-devel stb_image_resize-devel renderdoc-devel gamemode-devel
 BuildRequires:  spirv-headers-devel
 
