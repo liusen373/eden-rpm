@@ -1,0 +1,90 @@
+name: Build RPM in Fedora Container
+
+on:
+  create:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-rpm:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:rawhide
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        dnf install -y rpm-build rpmdevtools make gcc git ccache
+        dnf builddep -y *.spec
+
+    - name: Setup rpmbuild
+      run: |
+        rpmdev-setuptree
+        # 复制spec文件
+        cp *.spec ~/rpmbuild/SPECS/
+        
+        # 复制源代码文件
+        # 根据你的实际需求调整
+        cp -r sources/* ~/rpmbuild/SOURCES/ 2>/dev/null || true
+
+    - name: Extract version info
+      id: version_info
+      run: |
+        # 判断触发事件是标签还是分支
+        if [[ "${{ github.ref_type }}" == "tag" ]]; then
+          # 如果是标签触发，直接提取标签名
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "version==" >> $GITHUB_OUTPUT
+          echo "branch=" >> $GITHUB_OUTPUT # 标签触发时，分支可为空
+          echo "release=" >> $GITHUB_OUTPUT # 标签触发时，可忽略 spec 中的 Release
+        else
+          # 如果是分支触发，从 spec 文件提取并组合tag
+          VERSION=$(grep '^Version:' *.spec | awk '{print $2}')
+          RELEASE=$(grep '^Release:' *.spec | awk '{print $2}' | sed 's/%{?dist}//')
+          BRANCH=${GITHUB_REF#refs/heads/}
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "release=${RELEASE}" >> $GITHUB_OUTPUT
+          echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
+          echo "tag=${VERSION}-${BRANCH}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Cache
+      uses: actions/cache@v5
+      with:
+        path: |
+          ~/.cache/ccache
+          /root/.cache/ccache
+        key: ${{ steps.version_info.outputs.tag }}
+
+    - name: Build RPM
+      run: |
+        cd ~/rpmbuild/SPECS/
+        # 下载源码（如果spec中有Source URL）
+        spectool -g -R *.spec
+        
+        # 构建RPM
+        rpmbuild -ba *.spec
+        
+        # 列出生成的RPM
+        find ~/rpmbuild/RPMS ~/rpmbuild/SRPMS -name "*.rpm"
+    
+    - name: Prepare For Release
+      run: mv ~/rpmbuild .
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.version_info.outputs.tag }}
+        name: ${{ steps.version_info.outputs.tag }}
+        files: |
+          ./rpmbuild/RPMS/**/*.rpm
+          ./rpmbuild/SRPMS/*.rpm
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
