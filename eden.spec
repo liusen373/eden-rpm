@@ -14,13 +14,53 @@ URL:            https://eden-emu.dev/
 Source0:        https://github.com/eden-emulator/Releases/releases/download/v0.0.4/Eden-Source-v0.0.4.tar.zst   
 Source1:        https://github.com/Eden-CI/PGO/releases/latest/download/eden.profdata
 
-BuildRequires:  clang lld llvm-devel
-BuildRequires:  gcc gcc-c++ mold libusb1-devel
-BuildRequires:  cmake ninja-build glslang ffmpeg-free-devel spirv-tools-devel
-BuildRequires:  openssl-devel fmt-devel json-devel lz4-devel opus-devel boost-devel sdl2-compat-devel systemd-devel
-BuildRequires:  qt6-qtbase-devel qt6-qtbase-private-devel qt6-qtmultimedia-devel qt6-qttools-devel qt6-linguist qt6-qtwebengine-devel
-BuildRequires:  libtool stb_image-devel stb_image_write-devel stb_image_resize-devel renderdoc-devel gamemode-devel
-BuildRequires:  spirv-headers-devel
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
+BuildRequires:  mold
+
+BuildRequires:  ninja-build
+BuildRequires:  clang
+BuildRequires:  lld
+
+BuildRequires:  cmake
+BuildRequires:  cmake(LLVM)
+BuildRequires:  cmake(Qt6)
+BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6DBus)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6GuiPrivate)
+BuildRequires:  cmake(Qt6LinguistTools)
+BuildRequires:  cmake(Qt6Multimedia)
+BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  cmake(zlib)
+BuildRequires:  cmake(fmt)
+BuildRequires:  cmake(nlohmann_json)
+BuildRequires:  cmake(SPIRV-Headers)
+BuildRequires:  cmake(SPIRV-Tools)
+BuildRequires:  cmake(SDL2)
+BuildRequires:  cmake(Qt6Concurrent)
+BuildRequires:  cmake(Qt6WebEngineCore)
+BuildRequires:  cmake(Qt6WebEngineWidgets)
+
+BuildRequires:  pkgconfig
+BuildRequires:  pkgconfig(libva)
+BuildRequires:  pkgconfig(libusb)
+BuildRequires:  pkgconfig(openssl)
+BuildRequires:  pkgconfig(liblz4)
+BuildRequires:  pkgconfig(libzstd)
+BuildRequires:  pkgconfig(opus)
+BuildRequires:  pkgconfig(gamemode)
+BuildRequires:  pkgconfig(libudev)
+
+BuildRequires:  glslang
+BuildRequires:  automake
+BuildRequires:  ffmpeg-free-devel 
+BuildRequires:  boost-devel 
+BuildRequires:  stb_image-devel
+BuildRequires:  stb_image_write-devel
+BuildRequires:  stb_image_resize-devel
+BuildRequires:  renderdoc-devel 
+BuildRequires:  VulkanMemoryAllocator-devel
 
 %description
 Eden is an experimental open-source emulator for the Nintendo Switch, built with performance and stability in mind. It is written in C++ with cross-platform support for Windows, Linux, FreeBSD, Solaris, OpenBSD, and Android.
