@@ -121,4 +121,5 @@ cmake --install build
 
 
 %changelog
-* Wed 
+* Sat Jan 03 2026 liusen373 <52489720+liusen373@users.noreply.github.com> - 0.0.4-1
+- Eden v0.0.4
