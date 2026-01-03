@@ -1,8 +1,10 @@
 # 当启用 PGO 时，改用 clang 编译器
 %bcond_with pgo
 
-# 默认目标架构为 x86-64-v3，指定此标志时使用 -march=native -mtune=native
-%bcond_with native
+# Build preset to use. One of: custom, generic, v3, zen2, zen4, native
+%if ! %{defined build_preset}
+%global build_preset v3
+%endif
 
 Name:           eden
 Version:        0.0.4
@@ -91,12 +93,7 @@ cmake -S . -B build -GNinja \
     -DYUZU_USE_FASTER_LD=ON \
     -DYUZU_ENABLE_LTO=ON \
     -DDYNARMIC_ENABLE_LTO=ON \
-%if %{with native}
-    -DYUZU_BUILD_PRESET="native" \
-%endif
-%if %{without native}
-    -DYUZU_BUILD_PRESET="v3" \
-%endif
+    -DYUZU_BUILD_PRESET=%{build_preset} \
 %if %{with pgo}
     -DCMAKE_C_COMPILER=clang \
     -DCMAKE_CXX_COMPILER=clang++ \
