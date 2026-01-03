@@ -1,6 +1,14 @@
 # 当启用 PGO 时，改用 clang 编译器
 %bcond_with pgo
 
+%if %{with pgo}
+%global toolchain clang
+%endif
+
+# 使用gcc时，它会导致bundled libusb编译失败
+# 使用clang时，它会导致cmake的find_package失败
+%undefine _hardened_build
+
 # Build preset to use. One of: custom, generic, v3, zen2, zen4, native
 %if ! %{defined build_preset}
 %global build_preset v3
@@ -95,8 +103,6 @@ cmake -S . -B build -GNinja \
     -DDYNARMIC_ENABLE_LTO=ON \
     -DYUZU_BUILD_PRESET=%{build_preset} \
 %if %{with pgo}
-    -DCMAKE_C_COMPILER=clang \
-    -DCMAKE_CXX_COMPILER=clang++ \
     -DCMAKE_C_FLAGS="-fprofile-use=%{SOURCE1} -Wno-backend-plugin -Wno-profile-instr-unprofiled -Wno-profile-instr-out-of-date" \
     -DCMAKE_CXX_FLAGS="-fprofile-use=%{SOURCE1} -Wno-backend-plugin -Wno-profile-instr-unprofiled -Wno-profile-instr-out-of-date" \
 %endif
