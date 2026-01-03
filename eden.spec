@@ -75,7 +75,7 @@ Eden is an experimental open-source emulator for the Nintendo Switch, built with
 
 cmake -S . -B build -GNinja \
     -DCMAKE_INSTALL_PREFIX=%{buildroot}%{_prefix} \
-    -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
+    -DCMAKE_BUILD_TYPE="Release" \
     -DUSE_DISCORD_PRESENCE=ON \
     -DYUZU_USE_CPM=OFF \
     -DCPM_USE_LOCAL_PACKAGES=ON \
