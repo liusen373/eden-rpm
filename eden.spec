@@ -15,13 +15,13 @@
 %endif
 
 Name:           eden
-Version:        0.0.4
+Version:        0.1.0
 Release:        1%{?dist}
 Summary:        High-performance Nintendo Switch emulator forked from yuzu
 
 License:        GPL-3.0-or-later
 URL:            https://eden-emu.dev/
-Source0:        https://github.com/eden-emulator/Releases/releases/download/v0.0.4/Eden-Source-v0.0.4.tar.zst   
+Source0:        https://github.com/eden-emulator/Releases/releases/download/v0.1.0/Eden-Source-v0.1.0.tar.zst
 Source1:        https://github.com/Eden-CI/PGO/releases/latest/download/eden.profdata
 
 BuildRequires:  gcc
@@ -96,8 +96,8 @@ cmake -S . -B build -GNinja \
     -DYUZU_TESTS=OFF \
     -DDYNARMIC_TESTS=OFF \
     -DBUILD_TESTING=OFF \
-    -DYUZU_USE_FASTER_LD=ON \
-    -DYUZU_ENABLE_LTO=ON \
+    -DUSE_FASTER_LINKER=ON \
+    -DENABLE_LTO=ON \
     -DDYNARMIC_ENABLE_LTO=ON \
     -DYUZU_BUILD_PRESET=%{build_preset} \
 %if %{with pgo}
@@ -125,5 +125,8 @@ cmake --install build
 
 
 %changelog
+* Tue Jan 27 2026 liusen373 <52489720+liusen373@users.noreply.github.com> - 0.1.0-1
+- Eden v0.1.0
+
 * Sat Jan 03 2026 liusen373 <52489720+liusen373@users.noreply.github.com> - 0.0.4-1
 - Eden v0.0.4
